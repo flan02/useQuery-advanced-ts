@@ -1,5 +1,8 @@
 # Prueba técnica con TypeScript y React
 
+### Vimos lo basico en el componente App de midudev sobre useQuery, explica malisimamente mal se rompen rapido los proyectos que arma, cortamos todo aca y dejamos este repo para ver en profundidad useQuery mas adelante sino recurrimos a Redux o vemos SWR como alternativas para un proyecto mas grande.
+
+
 Esto es una prueba técnica de una empresa europea para un sueldo de 55000 €/anuales.
 
 El objetivo de esta prueba técnica es crear una aplicación similar a la que se proporciona en este enlace: https://midu-react-11.surge.sh/. Para lograr esto, debe usar la API proporcionada por https://randomuser.me/.

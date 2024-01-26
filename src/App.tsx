@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useRef, useState } from 'react'
+// import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import './App.css'
 import { UsersList } from './components/UsersList'
 import { SortBy, type User } from './types.d'
 import { Audio } from 'react-loader-spinner'
+import { useQuery } from '@tanstack/react-query'
 
 // ! Las funciones Fetch no tienen que actualizar el estado dentro, ni recibir param con variables de estado. Los estados manejarlos con el useEffect cuando se carga el componente
 // TODO Solo debe devolver la informacion que necesitamos de la API
@@ -19,14 +21,28 @@ const fetchUsers = async (page: number) => {
 
 
 function App() {
-  const [users, setUsers] = useState<User[]>([])
+  // TODO Las querys se cachean por defecto y se mantienen en un estado global
+  // TODO Gracias al array de ID, puedo recuperar la info desde cualquier sitio. Si no lo pongo, la info solo se guarda en el componente
+  // TODO Ademas de la ID, le tenemos que indicar como tiene que recuperar la informacion pasandole un METODO
+  const { isLoading, isError, data: users = [], refetch } = useQuery<User[]>({ // lo tipamos como un array de User
+    queryKey: ['users'], // la key de la informacion o de la query
+    queryFn: async () => await fetchUsers(1) // como traer la info
+  });
+
+  {
+    /*
+    * Gracias a nuestro useQuery podemos desactivar estos 3 estados, internamente los maneja useQuery
+    const [loading, setLoading] = useState<boolean>(false)
+    const [error, setError] = useState<boolean>(false)
+    const [users, setUsers] = useState<User[]>([])
+  */}
+
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const originalUsers = useRef<User[]>([])
+
+  //const originalUsers = useRef<User[]>([])
   // useRef -> para guardar un valor
   // que queremos que se comparta entre renderizados
   // pero que al cambiar, no vuelva a renderizar el componente
@@ -40,20 +56,25 @@ function App() {
     setSorting(newSortingValue)
   }
 
-  const handleReset = () => {
-    setUsers(originalUsers.current)
+  const handleReset = async () => {
+    //setUsers(originalUsers.current)
+    await refetch() // vuelve a pedir los datos a la API
   }
 
   const handleDelete = (email: string) => {
-    const filteredUsers = users.filter((user) => user.email !== email)
-    setUsers(filteredUsers)
+    console.log(email)
+    // const filteredUsers = users.filter((user: User) => user.email !== email)
+    // setUsers(filteredUsers)
   }
+
 
   const handleChangeSort = (sort: SortBy) => {
     setSorting(sort)
   }
 
   // * Fetch convencional no declaramos funcion async-await asi que podemos correr todo el codigo en el useEffect
+  /*
+  ! Si usamos useQuery, no necesitamos este useEffect porque el fetch lo manejamos internamente.
   useEffect(() => { // TODO la primera vez que se ejecuta es al montarse el componente
     setLoading(true)
     setError(false)
@@ -75,11 +96,12 @@ function App() {
         setLoading(false)
       })
   }, [currentPage]) // TODO ejecutamos el useEffect cada vez que cambie la pagina
+  */
 
   const filteredUsers = useMemo(() => {
     console.log('calculate filteredUsers')
     return filterCountry != null && filterCountry.length > 0
-      ? users.filter(user => {
+      ? users.filter((user) => {
         return user.location.country.toLowerCase().includes(filterCountry.toLowerCase())
       })
       : users
@@ -149,7 +171,7 @@ function App() {
             ? <UsersList changeSorting={handleChangeSort} deleteUser={handleDelete} showColors={showColors} users={sortedUsers} />
             : null
         }
-        {loading ?
+        {isLoading ?
           <Audio
             height="100"
             width="100"
@@ -160,10 +182,10 @@ function App() {
           />
           : null
         }
-        {error ? <p>There was an error</p> : null}
-        {(!error && users.length === 0) ? <p>No Users Found.</p> : null}
+        {isError ? <p>There was an error</p> : null}
+        {(!isLoading && !isError && users.length === 0) ? <p>No Users Found.</p> : null}
         {
-          (!loading && !error)
+          (!isLoading && !isError && users.length > 0)
             ? <button type="button" onClick={() => setCurrentPage(currentPage + 1)}>Show more</button>
             : null
         }
