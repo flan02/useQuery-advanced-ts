@@ -16,3 +16,19 @@ Los pasos a seguir:
 - [x] Implement a feature that allows the user to filter the data by country.
 - [x] Avoid sorting users again the data when the user is changing filter by country.
 - [x] Sort by clicking on the column header.
+
+# API
+### Random User Generator
+www.randomuser.me
+
+# usehooks written typescript
+https://usehooks-ts.com/
+
+# TanStack Query
+www.tanstack.com
+Powerful asynchronous state management for TS/JS
+Es un manejador de Estado Asincrono. No solo hace peticiones a la API, sino que tambien guarda el estado de la aplicacion. Maneja y administra datos asincronos
+Es una alternativa a Redux, hace que solo lo necesitemos en aplicaciones muy grandes.
+Da estado global, persistencia, facilidad de hacer llamadas asincronas 2 veces, etc.
+
+Tambien podemos utilizar SWR de Vercel.

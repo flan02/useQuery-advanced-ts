@@ -22,9 +22,9 @@ export function UsersList({ changeSorting, deleteUser, showColors, users }: Prop
 
       <tbody className={showColors ? 'table--showColors' : ''}>
         {
-          users.map((user) => {
+          users.map((user, index) => {
             return (
-              <tr key={user.email}>
+              <tr key={index}>
                 <td>
                   <img src={user.picture.thumbnail} />
                 </td>

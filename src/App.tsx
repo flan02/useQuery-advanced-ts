@@ -3,13 +3,29 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import './App.css'
 import { UsersList } from './components/UsersList'
 import { SortBy, type User } from './types.d'
+import { Audio } from 'react-loader-spinner'
+
+// ! Las funciones Fetch no tienen que actualizar el estado dentro, ni recibir param con variables de estado. Los estados manejarlos con el useEffect cuando se carga el componente
+// TODO Solo debe devolver la informacion que necesitamos de la API
+const fetchUsers = async (page: number) => {
+  return await fetch(`https://randomuser.me/api?results=20&seed=midudev&page=${page}`)
+    .then(async res => {
+      //console.log(res.ok, res.status, res.statusText);
+      if (!res.ok) throw new Error('Request Error!') // * Forma correcta con Fetch de ver si fallo la peticion asincrona. Axios lo gestiona con el catch
+      return await res.json()
+    })
+    .then(res => res.results)
+}
+
 
 function App() {
   const [users, setUsers] = useState<User[]>([])
   const [showColors, setShowColors] = useState(false)
   const [sorting, setSorting] = useState<SortBy>(SortBy.NONE)
   const [filterCountry, setFilterCountry] = useState<string | null>(null)
-
+  const [loading, setLoading] = useState<boolean>(false)
+  const [error, setError] = useState<boolean>(false)
+  const [currentPage, setCurrentPage] = useState<number>(1)
   const originalUsers = useRef<User[]>([])
   // useRef -> para guardar un valor
   // que queremos que se comparta entre renderizados
@@ -37,17 +53,28 @@ function App() {
     setSorting(sort)
   }
 
-  useEffect(() => {
-    fetch('https://randomuser.me/api?results=100')
-      .then(async res => await res.json())
-      .then(res => {
-        setUsers(res.results)
-        originalUsers.current = res.results
+  // * Fetch convencional no declaramos funcion async-await asi que podemos correr todo el codigo en el useEffect
+  useEffect(() => { // TODO la primera vez que se ejecuta es al montarse el componente
+    setLoading(true)
+    setError(false)
+
+    fetchUsers(currentPage)
+      .then(users => {
+        setUsers(prevUsers => {
+          // setUsers(res.results) // ! Esto es una mala practica porque si el componente se vuelve a renderizar, se vuelve a ejecutar el useEffect y se vuelve a hacer la peticion pisando el estado anterior
+          const newUsers = prevUsers.concat(users) // * Esta es la forma correcta de hacerlo para que la paginacion no pise el estado anterior
+          originalUsers.current = newUsers // concatenamos los usuarios antiguos con los nuevos
+          return newUsers
+        })
       })
-      .catch(err => {
+      .catch(err => { // ! Esta forma se usa para captar errores durante la promesa, no para manejarlos
+        setError(err)
         console.error(err)
       })
-  }, [])
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [currentPage]) // TODO ejecutamos el useEffect cada vez que cambie la pagina
 
   const filteredUsers = useMemo(() => {
     console.log('calculate filteredUsers')
@@ -116,7 +143,30 @@ function App() {
 
       </header>
       <main>
-        <UsersList changeSorting={handleChangeSort} deleteUser={handleDelete} showColors={showColors} users={sortedUsers} />
+        {/* El componente UsersList no se desmonta nunca aunque cambie el estado */}
+        {
+          (users.length > 0)
+            ? <UsersList changeSorting={handleChangeSort} deleteUser={handleDelete} showColors={showColors} users={sortedUsers} />
+            : null
+        }
+        {loading ?
+          <Audio
+            height="100"
+            width="100"
+            color="green"
+            ariaLabel="loading"
+            wrapperStyle={{ backgroundColor: 'transparent' }}
+            wrapperClass="loader"
+          />
+          : null
+        }
+        {error ? <p>There was an error</p> : null}
+        {(!error && users.length === 0) ? <p>No Users Found.</p> : null}
+        {
+          (!loading && !error)
+            ? <button type="button" onClick={() => setCurrentPage(currentPage + 1)}>Show more</button>
+            : null
+        }
       </main>
     </div>
   )
