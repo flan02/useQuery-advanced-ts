@@ -1,28 +1,18 @@
-# useQuery-advanced-ts
-React ts with useQuery
+# Prueba técnica con TypeScript y React
 
-# main configuracion inicial e instalacion de dependencias
+Esto es una prueba técnica de una empresa europea para un sueldo de 55000 €/anuales.
 
-# rama proyecto 1.
-(tabla componentes con filtros)
-estado de carga
-loading
-infinite scroll + paginacion + query params
-inifinite scroll sin boton
-refactorizacion
-react query + tanstack query
-fetchparam
-metodo flatmap()
-indicarle un limite a la paginacion
-custom hook para scroll infinite
-desactivar fetching
-devtools
+El objetivo de esta prueba técnica es crear una aplicación similar a la que se proporciona en este enlace: https://midu-react-11.surge.sh/. Para lograr esto, debe usar la API proporcionada por https://randomuser.me/.
 
-# rama proyecto 2
-(comments react query)
-mutaciones con reatquery y tanstack query
-mostrar los mensajes en tiempo real
-actualizar el cache react query manualmente
-hacer otra vez un refetch de la query
-actualizaciones optimistas
-manejo de errores
+Los pasos a seguir:
+
+- [x] Fetch 100 rows of data using the API.
+- [x] Display the data in a table format, similar to the example.
+- [x] Provide the option to color rows as shown in the example.
+- [x] Allow the data to be sorted by country as demonstrated in the example.
+- [x] Enable the ability to delete a row as shown in the example.
+- [x] Implement a feature that allows the user to restore the initial state, meaning that all deleted rows will be recovered.
+- [x] Handle any potential errors that may occur.
+- [x] Implement a feature that allows the user to filter the data by country.
+- [x] Avoid sorting users again the data when the user is changing filter by country.
+- [x] Sort by clicking on the column header.
