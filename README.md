@@ -1,37 +1,18 @@
-# Prueba técnica con TypeScript y React
+# Teoria de ReactQuery
 
-### Vimos lo basico en el componente App de midudev sobre useQuery, explica malisimamente mal se rompen rapido los proyectos que arma, cortamos todo aca y dejamos este repo para ver en profundidad useQuery mas adelante sino recurrimos a Redux o vemos SWR como alternativas para un proyecto mas grande.
+## opciones:
 
+refetchOnWindowFocus: Cuando sales de tu app y luego vuelves React Query vuelve hacer la petición de la data.
 
-Esto es una prueba técnica de una empresa europea para un sueldo de 55000 €/anuales.
+refetchOnMount: Cuando el componente se vuelve a montar entonces volverá a hacer la petición.
 
-El objetivo de esta prueba técnica es crear una aplicación similar a la que se proporciona en este enlace: https://midu-react-11.surge.sh/. Para lograr esto, debe usar la API proporcionada por https://randomuser.me/.
+retry: Número de veces que se volverá a intentar la petición.
 
-Los pasos a seguir:
+queryClient.invalidateQueries([key]) -> Esta linea de código, sirve para invalidar la cache y volver a pedir los datos al servidor. Es lo que normalmente quieres hacer cuando haces algún tipo de petición POST, PUT, DELETE, etc.
 
-- [x] Fetch 100 rows of data using the API.
-- [x] Display the data in a table format, similar to the example.
-- [x] Provide the option to color rows as shown in the example.
-- [x] Allow the data to be sorted by country as demonstrated in the example.
-- [x] Enable the ability to delete a row as shown in the example.
-- [x] Implement a feature that allows the user to restore the initial state, meaning that all deleted rows will be recovered.
-- [x] Handle any potential errors that may occur.
-- [x] Implement a feature that allows the user to filter the data by country.
-- [x] Avoid sorting users again the data when the user is changing filter by country.
-- [x] Sort by clicking on the column header.
+queryClient.setQueryData([key],
+                (prevUsers: User[] | undefined) => prevUsers ? [user, ...prevUsers] : [user]
+            ) -> setQueryData, necesita 2 parámetros, el primero es la queryKey para identificar que parte de la cache vas a obtener los datos y modificarlos.
+El segundo parámetro es la función para establecer la nueva data. La cual debe recibir por parámetro, la data que ya esta en la cache, que en este caso puede ser un arreglo de usuarios o undefined.
 
-# API
-### Random User Generator
-www.randomuser.me
-
-# usehooks written typescript
-https://usehooks-ts.com/
-
-# TanStack Query
-www.tanstack.com
-Powerful asynchronous state management for TS/JS
-Es un manejador de Estado Asincrono. No solo hace peticiones a la API, sino que tambien guarda el estado de la aplicacion. Maneja y administra datos asincronos
-Es una alternativa a Redux, hace que solo lo necesitemos en aplicaciones muy grandes.
-Da estado global, persistencia, facilidad de hacer llamadas asincronas 2 veces, etc.
-
-Tambien podemos utilizar SWR de Vercel.
+![use query](/public/query.mhtml)
