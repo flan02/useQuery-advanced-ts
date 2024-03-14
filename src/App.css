@@ -31,3 +31,11 @@ header {
   align-items: self-start;
 }
 
+.addbutton {
+  display: flex;
+  width: 50%;
+}
+
+.msg-add {
+  margin-left: .5rem;
+}
