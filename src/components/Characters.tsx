@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { useQuery } from '@tanstack/react-query'
 import CharacterComponent from './CharacterComponent'
+import { Audio } from 'react-loader-spinner'
 
 type Props = {}
 interface Character {
@@ -23,7 +24,7 @@ const Characters = (props: Props) => {
   })
 
   //console.log(charactersQuery.data);
-  if (charactersQuery.status === 'pending') return <div className='loading'>Loading...</div>
+  if (charactersQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
   return (
     <>
       <h2>

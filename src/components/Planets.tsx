@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import { Audio } from 'react-loader-spinner'
 import { useQuery } from '@tanstack/react-query'
 import Planeta from './Planeta'
 
@@ -17,11 +18,14 @@ const fetchPlanets = async () => {
 const Planets = (props: Props) => {
   const planetsQuery = useQuery({
     queryKey: ['planets'],
-    queryFn: fetchPlanets
+    queryFn: fetchPlanets,
+    staleTime: 0,
+    gcTime: 5000, // * Garbage collection time
+
   })
 
   //console.log(planetsQuery.status);
-  if (planetsQuery.status === 'pending') return <div className='loading'>Loading...</div>
+  if (planetsQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
   return (
     <>
       <h2>Planets</h2>
