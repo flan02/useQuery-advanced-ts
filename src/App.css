@@ -17,10 +17,10 @@ h1{
 button{
   margin: 0 10px;
   background-color: transparent;
-  border: 3px solid #ccc;
+  border: 3px solid orange;
   border-radius: 20px;
   padding: 10px;
-  color: #ccc;
+  color: #222;
   font-size: 1.2em;
   cursor: pointer;
 }
@@ -31,4 +31,45 @@ button:hover{
 }
 .content{
   text-align: center;
+}
+
+.card {
+  width: 50%;
+  margin: 0 auto;
+  border: 1px solid aliceblue;
+  border-collapse: collapse;
+  background-color: #111;
+}
+
+.card:hover {
+  background-color: #222;
+  color: #ddd;
+  
+}
+
+.loading {
+  margin: 5rem 0;
+  font-size: 2rem;
+  color: yellow;
+}
+
+.error {
+  color: red;
+  font-size: 2rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  color: #ffff57;
+  
+}
+
+.subname {
+  
+  font-size: 1rem;
+  color: #777;
+}
+
+p {
+  margin: 0.3rem 0;
 }
