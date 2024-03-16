@@ -3,6 +3,8 @@
 import { Audio } from 'react-loader-spinner'
 import { useQuery } from '@tanstack/react-query'
 import Planeta from './Planeta'
+import React from 'react'
+import Pagination from './Pagination'
 
 type Props = {}
 interface Planet {
@@ -10,14 +12,23 @@ interface Planet {
   population: string
   terrain: string
 }
-const fetchPlanets = async () => {
-  const res = await fetch('https://swapi.dev/api/planets/')
+
+interface Query {
+  queryKey: string[]
+  signal?: AbortSignal
+}
+
+const fetchPlanets = async (obj: Query) => {
+  //console.log(obj.queryKey);
+  const res = await fetch(`https://swapi.dev/api/planets/?page=${obj.queryKey[1]}`)
   return res.json()
 }
 
-const Planets = (props: Props) => {
+const Planets = (_props: Props) => {
+  const [page, setPage] = React.useState(1)
+  const [index, setIndex] = React.useState(0)
   const planetsQuery = useQuery({
-    queryKey: ['planets'],
+    queryKey: ['planets', `${page}`],
     queryFn: fetchPlanets,
     staleTime: 0,
     gcTime: 5000, // * Garbage collection time
@@ -25,6 +36,12 @@ const Planets = (props: Props) => {
   })
 
   //console.log(planetsQuery.status);
+  const next = planetsQuery.data?.next
+  /*
+  planetsQuery.data && planetsQuery.data.results.map((planet: Planet, index: number) => (
+    console.log(planet)
+  ))
+*/
   if (planetsQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
   return (
     <>
@@ -37,6 +54,7 @@ const Planets = (props: Props) => {
       {
         planetsQuery.status === 'error' && <div className='error'>Error fetching data</div>
       }
+      <Pagination setPage={setPage} page={page} next={next} index={index} setIndex={setIndex} />
     </>
   )
 }

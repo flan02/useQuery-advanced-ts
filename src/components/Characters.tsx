@@ -3,6 +3,8 @@
 import { useQuery } from '@tanstack/react-query'
 import CharacterComponent from './CharacterComponent'
 import { Audio } from 'react-loader-spinner'
+import Pagination from './Pagination'
+import React from 'react'
 
 type Props = {}
 interface Character {
@@ -12,32 +14,48 @@ interface Character {
   birth_year: string
 }
 
-const fetchCharacters = async () => {
-  const res = await fetch('https://swapi.dev/api/people/')
+
+interface Query {
+  queryKey: string[]
+  signal?: AbortSignal
+}
+
+const fetchCharacters = async (obj: Query) => {
+  const res = await fetch(`https://swapi.dev/api/people/?page=${obj.queryKey[1]}`)
   return res.json()
 }
 
-const Characters = (props: Props) => {
+
+const Characters = (_props: Props) => {
+  const [page, setPage] = React.useState(1)
+  const [index, setIndex] = React.useState(0)
   const charactersQuery = useQuery({
-    queryKey: ['characters'],
-    queryFn: fetchCharacters
+    queryKey: ['characters', `${page}`],
+    queryFn: fetchCharacters,
   })
 
-  //console.log(charactersQuery.data);
+  const next = charactersQuery.data?.next
+  //console.log(charactersQuery.data)
   if (charactersQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
   return (
     <>
-      <h2>
+      <h2 className='subtitle'>
         Characters
       </h2>
-      {
-        charactersQuery.data && charactersQuery.data.results.map((character: Character, index: number) => (
-          <CharacterComponent key={index} character={character} />
-        ))
-      }
+      <div className='container'>
+        {
+          charactersQuery.data && charactersQuery.data.results.map((character: Character, ind: number) => (
+
+            <CharacterComponent key={ind} character={character} index={index + ind + 1} />
+
+          ))
+
+        }
+      </div>
       {
         charactersQuery.status === 'error' && <div className='error'>Error fetching data</div>
       }
+      <Pagination setPage={setPage} page={page} next={next} index={index} setIndex={setIndex} />
     </>
   )
 }
