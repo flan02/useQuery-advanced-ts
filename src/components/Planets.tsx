@@ -1,10 +1,11 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Audio } from 'react-loader-spinner'
-import { useQuery } from '@tanstack/react-query'
 import Planeta from './Planeta'
-import React from 'react'
-import Pagination from './Pagination'
+import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInView } from 'react-intersection-observer'
+import React, { useEffect } from 'react'
 
 type Props = {}
 interface Planet {
@@ -16,46 +17,62 @@ interface Planet {
 interface Query {
   queryKey: string[]
   signal?: AbortSignal
+  pageParam?: number
 }
 
 const fetchPlanets = async (obj: Query) => {
-  //console.log(obj.queryKey);
-  const res = await fetch(`https://swapi.dev/api/planets/?page=${obj.queryKey[1]}`)
+  const res = await fetch(`https://swapi.dev/api/planets/`)
   return res.json()
 }
 
 const Planets = (_props: Props) => {
-  const [page, setPage] = React.useState(1)
-  const [index, setIndex] = React.useState(0)
-  const planetsQuery = useQuery({
-    queryKey: ['planets', `${page}`],
+
+  const infiniteQuery = useInfiniteQuery({
+    queryKey: ['planets'],
     queryFn: fetchPlanets,
-    staleTime: 0,
-    gcTime: 5000, // * Garbage collection time
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => {
+      console.log(lastPage.next);
+      return lastPage.next
+    }
+  });
 
-  })
+  const { ref, inView } = useInView()
 
-  //console.log(planetsQuery.status);
-  const next = planetsQuery.data?.next
-  /*
-  planetsQuery.data && planetsQuery.data.results.map((planet: Planet, index: number) => (
-    console.log(planet)
-  ))
-*/
-  if (planetsQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
+  useEffect(() => {
+    if (inView) {
+
+      //console.log(infiniteQuery.fetchNextPage());
+      infiniteQuery.fetchNextPage()
+    }
+  }, [infiniteQuery.fetchNextPage, inView])
+
+
+
+  if (infiniteQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
   return (
-    <>
-      <h2>Planets</h2>
+    <div>
+      <h2 className='subtitle'>Planets</h2>
       {
-        planetsQuery.data && planetsQuery.data.results.map((planet: Planet, index: number) => (
-          <Planeta key={index} planet={planet} />
+        infiniteQuery.data?.pages.map((group, i) => (
+          <div key={i}>
+            {
+              group.results.map((planet: Planet) => (
+                <Planeta key={planet.name} planet={planet} />
+              ))
+            }
+          </div>
         ))
       }
+      <div ref={ref}>
+        {
+          infiniteQuery.isFetchingNextPage ? <p className='loading'>Loading more...</p> : null
+        }
+      </div>
       {
-        planetsQuery.status === 'error' && <div className='error'>Error fetching data</div>
+        infiniteQuery.status === 'error' && <div className='error'>Error fetching data</div>
       }
-      <Pagination setPage={setPage} page={page} next={next} index={index} setIndex={setIndex} />
-    </>
+    </div>
   )
 }
 
