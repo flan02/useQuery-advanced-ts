@@ -3,9 +3,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Audio } from 'react-loader-spinner'
 import Planeta from './Planeta'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useIsFetching, keepPreviousData } from '@tanstack/react-query'
 import { useInView } from 'react-intersection-observer'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 
 type Props = {}
 interface Planet {
@@ -20,29 +20,34 @@ interface Query {
   pageParam?: number
 }
 
-const fetchPlanets = async (obj: Query) => {
-  const res = await fetch(`https://swapi.dev/api/planets/`)
-  return res.json()
-}
-
 const Planets = (_props: Props) => {
-
   const infiniteQuery = useInfiniteQuery({
     queryKey: ['planets'],
     queryFn: fetchPlanets,
-    initialPageParam: 0,
+    initialPageParam: 1,
     getNextPageParam: (lastPage) => {
-      console.log(lastPage.next);
-      return lastPage.next
+      //console.log(lastPage.next.slice(-1));
+      return lastPage.next.slice(-1)
+    },
+    getPreviousPageParam: (firstPage) => {
+      //console.log(parseInt(firstPage.next.slice(-1)) - 1);
+      if (firstPage <= 1) return undefined
+      return parseInt(firstPage.next.slice(-1)) - 1
     }
   });
 
+  async function fetchPlanets(obj: Query) {
+    const res = await fetch(`https://swapi.dev/api/planets/?page=${obj.pageParam}`)
+    //console.log(res);
+    return res.json()
+  }
+
+  const isFetching = useIsFetching() // * returns the number of queries that are currently fetching
   const { ref, inView } = useInView()
 
   useEffect(() => {
     if (inView) {
-
-      //console.log(infiniteQuery.fetchNextPage());
+      console.log(infiniteQuery.fetchNextPage());
       infiniteQuery.fetchNextPage()
     }
   }, [infiniteQuery.fetchNextPage, inView])
@@ -50,9 +55,11 @@ const Planets = (_props: Props) => {
 
 
   if (infiniteQuery.status === 'pending') return <Audio color='#00BFFF' height={100} width={100} wrapperClass='loading' />
+  console.log(infiniteQuery.hasNextPage);
   return (
     <div>
       <h2 className='subtitle'>Planets</h2>
+      {/* isFetching */}
       {
         infiniteQuery.data?.pages.map((group, i) => (
           <div key={i}>
@@ -66,8 +73,13 @@ const Planets = (_props: Props) => {
       }
       <div ref={ref}>
         {
-          infiniteQuery.isFetchingNextPage ? <p className='loading'>Loading more...</p> : null
+          infiniteQuery.isFetchingNextPage
+            ? <p className='loading'>Loading more...</p>
+            : infiniteQuery.hasNextPage ? null : <p className='loading'>No more planets to fetch</p>
         }
+
+
+
       </div>
       {
         infiniteQuery.status === 'error' && <div className='error'>Error fetching data</div>
