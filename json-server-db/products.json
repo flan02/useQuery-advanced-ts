@@ -1,0 +1,39 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Product 1",
+      "description": "info about product 1",
+      "price": 1000,
+      "inStock": true
+    },
+    {
+      "id": 2,
+      "name": "Product 2",
+      "description": "info about product 2",
+      "price": 2000,
+      "inStock": false
+    },
+    {
+      "id": 3,
+      "name": "Product 3",
+      "description": "info about product 3",
+      "price": 3000,
+      "inStock": false
+    },
+    {
+      "id": 4,
+      "name": "Product 4",
+      "description": "info about product 4",
+      "price": 4000,
+      "inStock": true
+    },
+    {
+      "id": 5,
+      "name": "Product 5",
+      "description": "info about product 5",
+      "price": 5000,
+      "inStock": true
+    }
+  ]
+}
