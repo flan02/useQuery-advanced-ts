@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 
+import ProductForm from "../ProductForm"
 import Products from "../Products"
 
 
@@ -13,6 +14,7 @@ const RestApiUI = (_props: Props) => {
   return (
     <>
       <h1>RestApiUI</h1>
+      <ProductForm />
       <Products />
     </>
   )

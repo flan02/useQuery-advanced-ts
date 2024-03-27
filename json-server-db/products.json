@@ -1,38 +1,52 @@
 {
   "products": [
     {
-      "id": 1,
+      "id": "1r4b",
       "name": "Product 1",
       "description": "info about product 1",
       "price": 1000,
       "inStock": true
     },
     {
-      "id": 2,
+      "id": "h2bb",
       "name": "Product 2",
       "description": "info about product 2",
       "price": 2000,
       "inStock": false
     },
     {
-      "id": 3,
+      "id": "c55j",
       "name": "Product 3",
       "description": "info about product 3",
       "price": 3000,
       "inStock": false
     },
     {
-      "id": 4,
+      "id": "dv9q",
       "name": "Product 4",
       "description": "info about product 4",
       "price": 4000,
       "inStock": true
     },
     {
-      "id": 5,
-      "name": "Product 5",
-      "description": "info about product 5",
-      "price": 5000,
+      "id": "1c28",
+      "name": "Mouse Gaming",
+      "description": "Amazing mouse for gamers",
+      "price": "1550",
+      "inStock": true
+    },
+    {
+      "id": "05db",
+      "name": "Keyboard Logitech",
+      "description": "Mechanical keyboard",
+      "price": "3299",
+      "inStock": false
+    },
+    {
+      "id": "eb50",
+      "name": "NBA 2K24",
+      "description": "Basketball Videogame",
+      "price": "70",
       "inStock": true
     }
   ]
